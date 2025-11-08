@@ -12,6 +12,7 @@ interface Product {
   name: string
   price: number
   image_url: string
+  product_link: string
 }
 
 export default function MerchandiseEditor({ initialProduct }: { initialProduct?: any }) {
@@ -20,6 +21,7 @@ export default function MerchandiseEditor({ initialProduct }: { initialProduct?:
       name: "",
       price: 0,
       image_url: "",
+      product_link: "",
     },
   )
   const [loading, setLoading] = useState(false)
@@ -42,6 +44,7 @@ export default function MerchandiseEditor({ initialProduct }: { initialProduct?:
         name: product.name,
         price: product.price,
         image_url: product.image_url,
+        product_link: product.product_link,
       }
 
       if (initialProduct?.id) {
@@ -107,6 +110,19 @@ export default function MerchandiseEditor({ initialProduct }: { initialProduct?:
             placeholder="0.00"
             className="w-full px-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
+        </div>
+
+        {/* Product Link */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">Product Link *</label>
+          <input
+            type="url"
+            value={product.product_link}
+            onChange={(e) => setProduct({ ...product, product_link: e.target.value })}
+            placeholder="https://www.redbubble.com/shop/ap/175680480"
+            className="w-full px-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <p className="text-xs text-muted-foreground mt-1">Enter the URL where users will be redirected when they click this product</p>
         </div>
 
         {/* Image URL */}

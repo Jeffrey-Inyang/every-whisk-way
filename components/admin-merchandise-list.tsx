@@ -17,6 +17,7 @@ interface Product {
 export default function AdminMerchandiseList() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
     fetchProducts()
@@ -33,9 +34,24 @@ export default function AdminMerchandiseList() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return
 
-    const supabase = createClient()
-    await supabase.from("merchandise").delete().eq("id", id)
-    fetchProducts()
+    setDeleting(id)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.from("merchandise").delete().eq("id", id)
+      
+      if (error) {
+        console.error("Delete error:", error)
+        alert(`Error deleting product: ${error.message}`)
+      } else {
+        // Remove from local state immediately for better UX
+        setProducts(products.filter(p => p.id !== id))
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err)
+      alert("An unexpected error occurred while deleting the product")
+    } finally {
+      setDeleting(null)
+    }
   }
 
   if (loading) {
@@ -81,9 +97,14 @@ export default function AdminMerchandiseList() {
                       Edit
                     </Button>
                   </Link>
-                  <Button size="sm" variant="destructive" onClick={() => handleDelete(product.id)}>
+                  <Button 
+                    size="sm" 
+                    variant="destructive" 
+                    onClick={() => handleDelete(product.id)}
+                    disabled={deleting === product.id}
+                  >
                     <Trash2 size={16} />
-                    Delete
+                    {deleting === product.id ? "Deleting..." : "Delete"}
                   </Button>
                 </div>
               </div>
