@@ -71,7 +71,7 @@ export default function MerchandiseRedesignStyled() {
                   <span className="text-sm font-serif font-semibold text-primary tracking-wider">The Collection</span>
                 </div>
                 <h2 className="text-5xl md:text-6xl font-serif font-bold text-foreground leading-tight">
-                    Curated Kitchen Essentials
+                    Curated Essentials
                 </h2>
                 <p className="text-muted-foreground mt-4 max-w-lg">
                     Discover carefully selected products that embody quality, sustainability, and mindfulness in every whisk.
