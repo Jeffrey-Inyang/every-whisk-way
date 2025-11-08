@@ -4,7 +4,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
-import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react" // Added ShoppingBag for a cleaner CTA
+import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react"
 
 interface Product {
   id: string
@@ -19,7 +19,8 @@ export default function MerchandiseRedesignStyled() {
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
 
-  // Retained original data fetching logic
+  const REDBUBBLE_URL = "https://www.redbubble.com/shop/ap/175680480"
+
   useEffect(() => {
     const fetchProducts = async () => {
       const supabase = createClient()
@@ -29,7 +30,6 @@ export default function MerchandiseRedesignStyled() {
     fetchProducts()
   }, [])
 
-  // Retained original scroll functionality
   const scroll = (direction: "left" | "right") => {
     const container = document.getElementById("merch-scroll")
     if (!container) return
@@ -43,14 +43,11 @@ export default function MerchandiseRedesignStyled() {
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget
     setCanScrollLeft(container.scrollLeft > 0)
-    // Adjusted threshold for better visibility/UX on scroll check
     setCanScrollRight(container.scrollLeft < container.scrollWidth - container.clientWidth - 50) 
   }
   
-  // Set initial scroll state after products load
   useEffect(() => {
     if (products.length > 0) {
-        // Run initial check to see if scroll is possible
         const container = document.getElementById("merch-scroll");
         if (container) {
             setCanScrollRight(container.scrollWidth > container.clientWidth);
@@ -63,7 +60,6 @@ export default function MerchandiseRedesignStyled() {
     <section className="py-24 md:py-32 px-6 sm:px-8 lg:px-12 bg-background" id="merchandise">
       <div className="max-w-7xl mx-auto">
         
-        {/* Header Section: Left-aligned and uses serif font for editorial style */}
         <div className="flex justify-between items-end mb-16 border-b pb-8 border-border/70">
             <div>
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/30 rounded-full mb-4">
@@ -76,9 +72,10 @@ export default function MerchandiseRedesignStyled() {
                     Discover carefully selected products that embody quality, sustainability, and mindfulness in every whisk.
                 </p>
             </div>
-            {/* View All Button on the right */}
             <a 
-                href="/merchandise" 
+                href={REDBUBBLE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hidden sm:inline-flex items-center text-base font-semibold text-primary hover:text-primary/80 transition tracking-wide underline underline-offset-4"
             >
                 View All Products
@@ -89,7 +86,7 @@ export default function MerchandiseRedesignStyled() {
         <div className="relative">
           <div 
             id="merch-scroll" 
-            className="flex gap-10 overflow-x-auto pb-6 scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" // Added styles to hide scrollbar
+            className="flex gap-10 overflow-x-auto pb-6 scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             onScroll={handleScroll}
           >
             {products.length === 0 ? (
@@ -98,9 +95,15 @@ export default function MerchandiseRedesignStyled() {
               </div>
             ) : (
               products.map((product) => (
-                <a key={product.id} href={`/merch/${product.id}`} className="flex-shrink-0 w-80 group"> {/* Increased card width */}
+                <a 
+                  key={product.id} 
+                  href={REDBUBBLE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0 w-80 group"
+                >
                   <div className="bg-card rounded-lg overflow-hidden transition-all duration-300 border border-border/60 group-hover:border-primary/40 shadow-md group-hover:shadow-xl">
-                    <div className="relative aspect-[3/4] bg-secondary overflow-hidden"> {/* Changed to a vertical aspect ratio */}
+                    <div className="relative aspect-[3/4] bg-secondary overflow-hidden">
                       {product.image_url ? (
                         <Image
                           src={product.image_url || "/placeholder.svg"}
@@ -116,7 +119,6 @@ export default function MerchandiseRedesignStyled() {
                       )}
                     </div>
 
-                    {/* Info Block - Cleaner presentation */}
                     <div className="p-5 space-y-1 text-center">
                         <h3 className="font-serif font-semibold text-card-foreground text-xl leading-snug transition-colors group-hover:text-primary">
                           {product.name}
@@ -128,10 +130,11 @@ export default function MerchandiseRedesignStyled() {
               ))
             )}
             
-            {/* Spacer/CTA Card for the end of the scroll list */}
             <div className="flex-shrink-0 w-80 flex items-center justify-center">
                  <a 
-                    href="/merchandise" 
+                    href={REDBUBBLE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex flex-col items-center justify-center p-8 border-2 border-border/70 border-dashed rounded-lg h-full text-center hover:border-primary/70 transition-colors group/cta"
                  >
                     <ShoppingBag size={40} className="text-primary/70 group-hover/cta:text-primary transition-colors mb-4" />
@@ -141,7 +144,6 @@ export default function MerchandiseRedesignStyled() {
             </div>
           </div>
           
-          {/* Scroll Buttons - Repositioned to be less intrusive */}
           {canScrollLeft && (
             <button
               onClick={() => scroll("left")}
