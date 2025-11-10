@@ -1,3 +1,4 @@
+// app\blog\page.tsx
 import Navbar from "@/components/navbar"
 import BlogContent from "@/components/blog-content"
 import Footer from "@/components/footer"
