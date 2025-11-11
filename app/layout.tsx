@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 // Define the Cloudinary URL for the logo/favicon
-const FAVICON_URL = "https://res.cloudinary.com/dkccco1fh/image/upload/v1762595533/logo_gdpg4s.svg"
+const FAVICON_URL = "https://res.cloudinary.com/dkccco1fh/image/upload/v1762828762/Gemini_Generated_Image_fppd05fppd05fppd_2_wusnaa.svg"
 
 export const metadata: Metadata = {
   title: "Every Whisk Way - Mindful Cooking Blog",

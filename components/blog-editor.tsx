@@ -24,7 +24,7 @@ interface User {
   id: string
 }
 
-const BLOG_CATEGORIES = ["Recipes & Cookbooks", "Zero-Waste Products", "Kitchen Hacks", "Sustainable Living"]
+const BLOG_CATEGORIES = ["Recipes & Cookbooks", "Kitchen Finds", "Sustainable Living", "Home Decor"]
 
 export default function BlogEditor({ user, initialPost }: { user: User; initialPost?: any }) {
   const [post, setPost] = useState<BlogPost>(
@@ -101,24 +101,24 @@ export default function BlogEditor({ user, initialPost }: { user: User; initialP
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-           {" "}
+           {" "}
       <div className="flex items-center gap-4 mb-8">
-               {" "}
+               {" "}
         <Link href="/admin">
-                   {" "}
+                   {" "}
           <Button variant="ghost" size="sm">
-                        <ArrowLeft size={18} />            Back          {" "}
+                        <ArrowLeft size={18} />            Back          {" "}
           </Button>
-                 {" "}
+                 {" "}
         </Link>
-                <h1 className="text-3xl font-bold text-foreground">{initialPost ? "Edit Post" : "Create New Post"}</h1> 
-           {" "}
+                <h1 className="text-3xl font-bold text-foreground">{initialPost ? "Edit Post" : "Create New Post"}</h1> 
+           {" "}
       </div>
-           {" "}
+           {" "}
       <div className="bg-card border border-border rounded-lg p-6 space-y-6">
-                {/* Title */}       {" "}
+                {/* Title */}       {" "}
         <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Post Title *</label>         {" "}
+                    <label className="block text-sm font-medium text-foreground mb-2">Post Title *</label>         {" "}
           <input
             type="text"
             value={post.title}
@@ -126,11 +126,11 @@ export default function BlogEditor({ user, initialPost }: { user: User; initialP
             placeholder="Enter post title..."
             className="w-full px-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
-                 {" "}
+                 {" "}
         </div>
-                {/* Slug */}       {" "}
+                {/* Slug */}       {" "}
         <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">URL Slug *</label>         {" "}
+                    <label className="block text-sm font-medium text-foreground mb-2">URL Slug *</label>         {" "}
           <input
             type="text"
             value={post.slug}
@@ -138,29 +138,29 @@ export default function BlogEditor({ user, initialPost }: { user: User; initialP
             placeholder="auto-generated-slug"
             className="w-full px-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
-                 {" "}
+                 {" "}
         </div>
-               {" "}
+               {" "}
         <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Category *</label>         {" "}
+                    <label className="block text-sm font-medium text-foreground mb-2">Category *</label>         {" "}
           <select
             value={post.category}
             onChange={(e) => setPost({ ...post, category: e.target.value })}
             className="w-full px-4 py-2 bg-background border border-input rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           >
-                        <option value="">Select a category...</option>           {" "}
+                        <option value="">Select a category...</option>           {" "}
             {BLOG_CATEGORIES.map((category) => (
               <option key={category} value={category}>
-                                {category}             {" "}
+                                {category}             {" "}
               </option>
             ))}
-                     {" "}
+                     {" "}
           </select>
-                 {" "}
+                 {" "}
         </div>
-                {/* Excerpt */}       {" "}
+                {/* Excerpt */}       {" "}
         <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Excerpt</label>         {" "}
+                    <label className="block text-sm font-medium text-foreground mb-2">Excerpt</label>         {" "}
           <textarea
             value={post.excerpt}
             onChange={(e) => setPost({ ...post, excerpt: e.target.value })}
@@ -168,12 +168,12 @@ export default function BlogEditor({ user, initialPost }: { user: User; initialP
             rows={2}
             className="w-full px-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
-                 {" "}
+                 {" "}
         </div>
-                {/* Featured Image URL */}       {" "}
+                {/* Featured Image URL */}       {" "}
         <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Featured Image URL</label>       
-           {" "}
+                    <label className="block text-sm font-medium text-foreground mb-2">Featured Image URL</label>       
+           {" "}
           <input
             type="url"
             value={post.featured_image_url}
@@ -181,11 +181,11 @@ export default function BlogEditor({ user, initialPost }: { user: User; initialP
             placeholder="https://example.com/image.jpg"
             className="w-full px-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
-                 {" "}
+                 {" "}
         </div>
-                {/* Content */}       {" "}
+                {/* Content */}       {" "}
         <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Content (HTML) *</label>         {" "}
+                    <label className="block text-sm font-medium text-foreground mb-2">Content (HTML) *</label>         {" "}
           <textarea
             value={post.content}
             onChange={(e) => setPost({ ...post, content: e.target.value })}
@@ -193,29 +193,29 @@ export default function BlogEditor({ user, initialPost }: { user: User; initialP
             rows={12}
             className="w-full px-4 py-2 bg-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary font-mono text-sm"
           />
-                 {" "}
+                 {" "}
         </div>
-                {/* Messages */}       {" "}
+                {/* Messages */}       {" "}
         {message && (
           <p className={`text-sm ${message.includes("successfully") ? "text-green-600" : "text-amber-600"}`}>
-                        {message}         {" "}
+                        {message}         {" "}
           </p>
         )}
-                {/* Buttons */}       {" "}
+                {/* Buttons */}       {" "}
         <div className="flex gap-4 pt-4">
-                   {" "}
+                   {" "}
           <Button onClick={() => handleSave(false)} disabled={loading} variant="outline">
-                        {loading ? "Saving..." : "Save as Draft"}         {" "}
+                        {loading ? "Saving..." : "Save as Draft"}         {" "}
           </Button>
-                   {" "}
+                   {" "}
           <Button onClick={() => handleSave(true)} disabled={loading}>
-                        {loading ? "Publishing..." : "Publish"}         {" "}
+                        {loading ? "Publishing..." : "Publish"}         {" "}
           </Button>
-                 {" "}
+                 {" "}
         </div>
-             {" "}
+             {" "}
       </div>
-         {" "}
+         {" "}
     </div>
   )
 }

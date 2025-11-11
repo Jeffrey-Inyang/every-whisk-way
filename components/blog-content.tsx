@@ -13,9 +13,9 @@ import Image from "next/image"
 const BLOG_CATEGORIES: string[] = [
   "Latest",
   "Recipes & Cookbooks",
-  "Zero-Waste Products",
-  "Kitchen Hacks",
+  "Kitchen Finds",
   "Sustainable Living",
+  "Home Decor",
 ]
 
 // --- Interfaces (Kept consistent) ---
