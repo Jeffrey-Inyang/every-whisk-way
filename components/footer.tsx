@@ -1,4 +1,7 @@
-import { Leaf } from "lucide-react"
+
+// components\footer.tsx
+
+import { Leaf, Mail, ArrowUpRight } from "lucide-react"
 
 // Set the common email address as a constant for easy maintenance
 const CONTACT_EMAIL = "everywhiskway@outlook.com"
@@ -35,106 +38,142 @@ export default function Footer() {
     },
   ]
 
-  // Editorial & Minimalist Theme: Dark background, light text, serif font style.
+  const quickLinks = [
+    { name: "Home", href: "/" },
+    { name: "Blog", href: "/blog" },
+    { name: "Newsletter", href: "/#subscribe" },
+  ]
+
+  const legalLinks = [
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms of Service", href: "/terms-of-service" },
+  ]
+
   return (
-    <footer className="bg-gray-950 text-gray-200 py-16 px-6 sm:px-8 lg:px-12 font-serif">
-      <div className="max-w-7xl mx-auto">
-        {/* Main Content Grid (Responsive layout, spanning across 3 or 5 columns) */}
-        <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-12 pb-12">
-          {/* Column 1: Logo & Mission (Takes more space for prominence) */}
-          <div className="md:col-span-1 lg:col-span-2 space-y-4">
-            <a href="/" className="flex items-center gap-2 group text-white">
-              {/* Using the Leaf icon for brand consistency */}
-              <Leaf size={24} className="text-primary transition-colors group-hover:text-primary/70" />
-              <span className="text-xl font-bold tracking-tight">Every Whisk Way</span>
-            </a>
-            <p className="text-sm text-gray-400 max-w-sm leading-relaxed">
-              Mindful cooking and organic living. We curate thoughtful recipes, essays, and stories for a healthier,
-              more conscious kitchen.
-            </p>
-          </div>
+    <footer className="relative bg-gradient-to-b from-gray-950 to-black text-gray-100 overflow-hidden">
+      {/* Decorative top border */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        {/* Main Footer Content */}
+        <div className="py-16 lg:py-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16">
+            {/* Brand Column - Spans more space */}
+            <div className="lg:col-span-5 space-y-6">
+              <a href="/" className="inline-flex items-center gap-3 group">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <Leaf className="w-6 h-6 text-primary" />
+                </div>
+                <span className="text-2xl font-serif font-light text-white tracking-tight">
+                  Every Whisk Way
+                </span>
+              </a>
+              
+              <p className="text-base text-gray-400 font-light leading-relaxed max-w-md">
+                A mindful approach to cooking and organic living. We curate thoughtful recipes, essays, and stories 
+                for a healthier, more conscious kitchen.
+              </p>
 
-          {/* Column 2: Navigation */}
-          <div className="md:col-span-1 lg:col-span-1">
-            {/* Minimalist divider beneath uppercase title */}
-            <h4 className="font-bold mb-4 text-white text-sm tracking-widest uppercase border-b border-primary/50 pb-1">
-              Navigation
-            </h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a href="/" className="text-gray-400 hover:text-white transition">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="/blog" className="text-gray-400 hover:text-white transition">
-                  Blog
-                </a>
-              </li>
-              <li>
+              {/* Newsletter CTA */}
+              <div className="pt-4">
                 <a 
-                  href={`mailto:${CONTACT_EMAIL}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-gray-400 hover:text-white transition"
+                  href="/#subscribe"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all group shadow-lg hover:shadow-primary/20"
                 >
-                  Contact
+                  <Mail className="w-4 h-4" />
+                  <span className="font-light">Join Our Newsletter</span>
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
-              </li>
-              <li>
-                <a href="/#subscribe" className="text-gray-400 hover:text-white transition">
-                  Newsletter
-                </a>
-              </li>
-            </ul>
-          </div>
+              </div>
+            </div>
 
-          {/* Column 3: Legal & Policies */}
-          <div className="md:col-span-1 lg:col-span-1">
-            <h4 className="font-bold mb-4 text-white text-sm tracking-widest uppercase border-b border-primary/50 pb-1">
-              Legal
-            </h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a href="/privacy-policy" className="text-gray-400 hover:text-white transition">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="/terms-of-service" className="text-gray-400 hover:text-white transition">
-                  Terms of Service
-                </a>
-              </li>
-            </ul>
-          </div>
+            {/* Quick Links */}
+            <div className="lg:col-span-2">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-6 font-medium">
+                Quick Links
+              </h3>
+              <ul className="space-y-4">
+                {quickLinks.map((link) => (
+                  <li key={link.name}>
+                    <a 
+                      href={link.href}
+                      className="text-gray-300 hover:text-primary transition-colors font-light text-sm inline-flex items-center gap-2 group"
+                    >
+                      <span>{link.name}</span>
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  </li>
+                ))}
+                <li>
+                  <a 
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-300 hover:text-primary transition-colors font-light text-sm inline-flex items-center gap-2 group"
+                  >
+                    <span>Contact</span>
+                    <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-          {/* Column 4: Connect / Socials */}
-          <div className="lg:col-span-1">
-            <h4 className="font-bold mb-4 text-white text-sm tracking-widest uppercase border-b border-primary/50 pb-1">
-              Connect
-            </h4>
-            <div className="flex gap-4">
-              {socialLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  aria-label={link.label}
-                  className="text-gray-400 hover:text-primary transition duration-300"
-                >
-                  {link.svg}
-                </a>
-              ))}
+            {/* Legal */}
+            <div className="lg:col-span-2">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-6 font-medium">
+                Legal
+              </h3>
+              <ul className="space-y-4">
+                {legalLinks.map((link) => (
+                  <li key={link.name}>
+                    <a 
+                      href={link.href}
+                      className="text-gray-300 hover:text-primary transition-colors font-light text-sm inline-flex items-center gap-2 group"
+                    >
+                      <span>{link.name}</span>
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Social & Connect */}
+            <div className="lg:col-span-3">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-6 font-medium">
+                Connect With Us
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {socialLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={link.label}
+                    className="w-11 h-11 rounded-full bg-gray-800/50 hover:bg-primary/10 border border-gray-700/50 hover:border-primary/30 flex items-center justify-center text-gray-400 hover:text-primary transition-all group"
+                  >
+                    {link.svg}
+                  </a>
+                ))}
+              </div>
+
+              <p className="text-xs text-gray-500 mt-6 font-light leading-relaxed">
+                Follow us for daily inspiration, recipes, and sustainable living tips.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Footer Bottom Bar: Copyright & Tagline */}
-        <div className="border-t border-gray-700/50 pt-8 mt-4">
-          <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-4">
-            <p>&copy; {currentYear} Every Whisk Way. All rights reserved.</p>
-            <p className="font-medium tracking-wider">A Conscious Culinary Journal.</p>
+        {/* Footer Bottom */}
+        <div className="border-t border-gray-800/50 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-gray-500 font-light">
+              © {currentYear} Every Whisk Way. All rights reserved.
+            </p>
+            <p className="text-sm text-gray-400 font-light italic">
+              A Conscious Culinary Journal
+            </p>
           </div>
         </div>
       </div>

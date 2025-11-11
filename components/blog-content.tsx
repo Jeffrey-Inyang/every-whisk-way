@@ -6,6 +6,7 @@ import { useEffect, useState, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
 import Image from "next/image"
+import { Calendar, ArrowRight, Sparkles } from "lucide-react"
 
 // --- Configuration ---
 
@@ -101,10 +102,14 @@ export default function BlogContent() {
 
   if (loading) {
     return (
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="border-t-2 border-primary border-solid w-8 h-8 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-xl text-muted-foreground font-light">Loading fresh content...</p>
+      <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <div className="relative w-16 h-16 mx-auto mb-8">
+            <div className="absolute inset-0 border-2 border-primary/20 rounded-full"></div>
+            <div className="absolute inset-0 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <h2 className="text-2xl font-serif font-light text-foreground mb-3">Loading Journal</h2>
+          <p className="text-base text-muted-foreground font-light">Curating thoughtful content for you...</p>
         </div>
       </div>
     )
@@ -112,10 +117,19 @@ export default function BlogContent() {
 
   if (error) {
     return (
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto text-center bg-red-50 border border-red-300 p-8 rounded-lg">
-          <p className="text-2xl font-bold text-red-700 mb-2">Error Loading Data</p>
-          <p className="text-red-600">{error}</p>
+      <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md text-center">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-50 flex items-center justify-center">
+            <span className="text-2xl">⚠️</span>
+          </div>
+          <h2 className="text-2xl font-serif font-light text-foreground mb-3">Unable to Load Content</h2>
+          <p className="text-base text-muted-foreground font-light mb-6">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-light"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     )
@@ -123,10 +137,15 @@ export default function BlogContent() {
 
   if (posts.length === 0) {
     return (
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto text-center">
+      <div className="min-h-screen flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl text-center">
+          <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-muted flex items-center justify-center">
+            <Sparkles className="w-10 h-10 text-muted-foreground" />
+          </div>
           <h2 className="text-4xl font-serif font-light text-foreground mb-4">The Journal</h2>
-          <p className="text-xl text-muted-foreground">No articles have been published yet.</p>
+          <p className="text-xl text-muted-foreground font-light leading-relaxed">
+            Our first stories are being carefully crafted. Check back soon for thoughtful essays on sustainable living.
+          </p>
         </div>
       </div>
     )
@@ -135,86 +154,130 @@ export default function BlogContent() {
   // --- Main Content Display ---
 
   return (
-    <section className="py-12 sm:py-20 bg-background">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-10">
-        <header className="text-center mb-12 max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-light tracking-tight text-foreground leading-tight mb-4">
+    <section className="py-16 sm:py-24 lg:py-32 bg-background">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        {/* Header Section */}
+        <header className="text-center mb-16 lg:mb-20 max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-primary/5 rounded-full border border-primary/10">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-xs uppercase tracking-[0.2em] text-primary font-medium">The Journal</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-light tracking-tight text-foreground leading-[1.1] mb-6">
             The Sustainable Kitchen Journal
           </h1>
-          <p className="text-base sm:text-lg text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto">
-            Thoughtful essays on mindful cooking, zero-waste living, and sustainable kitchen practices.
+          <p className="text-lg sm:text-xl text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto">
+            Thoughtful essays on mindful cooking, zero-waste living, and the art of sustainable kitchen practices.
           </p>
         </header>
 
-        <div className="mb-12 border-b border-border/50">
-          <nav className="flex space-x-6 sm:space-x-8 overflow-x-auto pb-3 md:pb-4 justify-center">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`
-                  px-1 py-2 text-xs sm:text-sm font-medium tracking-wide transition-all duration-300 whitespace-nowrap relative
-                  ${
-                    activeCategory === category
-                      ? "text-foreground after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  }
-                `}
-              >
-                {category}
-              </button>
-            ))}
-          </nav>
+        {/* Category Navigation */}
+        <div className="mb-16 lg:mb-20">
+          <div className="flex items-center justify-center">
+            <nav className="inline-flex items-center gap-2 p-2 bg-muted/30 rounded-full border border-border/50">
+              {categories.map((category, index) => (
+                <button
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
+                  className={`
+                    relative px-6 py-2.5 text-sm font-light tracking-wide transition-all duration-300 rounded-full whitespace-nowrap
+                    ${
+                      activeCategory === category
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                    }
+                  `}
+                >
+                  {category}
+                  {activeCategory === category && (
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
+                  )}
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
 
+        {/* Featured Post - Hero Style */}
         {activeCategory === "Latest" && featuredPost && (
-          <div className="mb-12 pb-12 border-b border-border/50">
-            <Link href={`/blog/${featuredPost.slug}`}>
-              <article className="group cursor-pointer">
-                {featuredPost.featured_image_url && (
-                  <div className="mb-6 overflow-hidden rounded-sm bg-muted aspect-video">
-                    <Image
-                      src={featuredPost.featured_image_url || "/placeholder.svg"}
-                      alt={featuredPost.title}
-                      width={1200}
-                      height={675}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+          <div className="mb-20 lg:mb-28">
+            <Link href={`/blog/${featuredPost.slug}`} className="group block">
+              <article className="relative overflow-hidden rounded-2xl bg-muted border border-border/50 hover:border-primary/30 transition-all duration-500">
+                <div className="grid lg:grid-cols-2 gap-0">
+                  {/* Image Side */}
+                  {featuredPost.featured_image_url && (
+                    <div className="relative h-80 lg:h-[600px] overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <Image
+                        src={featuredPost.featured_image_url || "/placeholder.svg"}
+                        alt={featuredPost.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+                      <div className="absolute top-6 left-6 z-20">
+                        <span className="inline-block px-4 py-1.5 text-xs font-medium tracking-widest uppercase bg-primary text-primary-foreground rounded-full shadow-lg">
+                          Featured
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Content Side */}
+                  <div className="flex flex-col justify-center p-8 lg:p-12 xl:p-16">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                      <time className="text-sm text-muted-foreground font-light tracking-wide">
+                        {new Date(featuredPost.created_at).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </time>
+                    </div>
+                    
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-light text-foreground mb-6 leading-[1.15] tracking-tight group-hover:text-primary transition-colors duration-300">
+                      {featuredPost.title}
+                    </h2>
+                    
+                    <p className="text-base lg:text-lg text-muted-foreground font-light leading-relaxed mb-8 line-clamp-3">
+                      {featuredPost.excerpt}
+                    </p>
+                    
+                    <div className="inline-flex items-center gap-2 text-sm font-light text-primary group-hover:gap-4 transition-all">
+                      <span>Read Article</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
                   </div>
-                )}
-                <div>
-                  <p className="text-xs text-muted-foreground mb-2 uppercase tracking-widest font-medium">
-                    {new Date(featuredPost.created_at).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </p>
-                  <h2 className="text-3xl sm:text-4xl font-serif font-light text-foreground mb-3 group-hover:text-primary transition leading-tight">
-                    {featuredPost.title}
-                  </h2>
-                  <p className="text-base text-muted-foreground font-light leading-relaxed max-w-3xl">
-                    {featuredPost.excerpt}
-                  </p>
                 </div>
               </article>
             </Link>
           </div>
         )}
 
+        {/* Section Header for Article List */}
         {displayPosts.length > 0 && (activeCategory === "Latest" ? listPosts.length > 0 : true) && (
-          <h2 className="text-xl sm:text-2xl font-serif font-light text-foreground mb-8">
-            {activeCategory === "Latest" ? "Latest Articles" : activeCategory}
-            <span className="text-muted-foreground ml-2 text-xs font-sans font-normal">
-              ({activeCategory === "Latest" ? listPosts.length : displayPosts.length})
-            </span>
-          </h2>
+          <div className="mb-12 flex items-center justify-between border-b border-border/50 pb-6">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl sm:text-3xl font-serif font-light text-foreground tracking-tight">
+                {activeCategory === "Latest" ? "Latest Articles" : activeCategory}
+              </h2>
+              <span className="inline-flex items-center justify-center min-w-[32px] h-8 px-3 text-xs font-medium text-muted-foreground bg-muted rounded-full">
+                {activeCategory === "Latest" ? listPosts.length : displayPosts.length}
+              </span>
+            </div>
+          </div>
         )}
 
-        <div className="space-y-8 divide-y divide-border/50">
+        {/* Articles Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
           {displayPosts.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-base text-muted-foreground font-light">No articles available in {activeCategory}.</p>
+            <div className="col-span-full text-center py-20">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
+                <span className="text-2xl">📝</span>
+              </div>
+              <h3 className="text-xl font-serif font-light text-foreground mb-3">No Articles Yet</h3>
+              <p className="text-base text-muted-foreground font-light">
+                We're working on content for {activeCategory}. Check back soon!
+              </p>
             </div>
           ) : (
             (activeCategory === "Latest" ? listPosts : displayPosts).map((post) => {
@@ -225,30 +288,47 @@ export default function BlogContent() {
               })
 
               return (
-                <Link key={post.id} href={`/blog/${post.slug}`}>
-                  <article className="group cursor-pointer py-8 transition-all duration-300">
-                    <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
-                      {post.featured_image_url && (
-                        <div className="flex-shrink-0 w-full sm:w-40 h-32 sm:h-40 rounded-sm overflow-hidden bg-muted">
-                          <Image
-                            src={post.featured_image_url || "/placeholder.svg"}
-                            alt={post.title}
-                            width={192}
-                            height={192}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
+                <Link key={post.id} href={`/blog/${post.slug}`} className="group">
+                  <article className="h-full flex flex-col bg-background rounded-xl border border-border/50 overflow-hidden hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                    {/* Image */}
+                    {post.featured_image_url && (
+                      <div className="relative h-56 overflow-hidden bg-muted">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <Image
+                          src={post.featured_image_url || "/placeholder.svg"}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        {/* Category Badge */}
+                        <div className="absolute top-4 left-4 z-20">
+                          <span className="inline-block px-3 py-1 text-xs font-medium tracking-wider uppercase bg-background/90 backdrop-blur-sm text-foreground rounded-full border border-border/50">
+                            {post.category}
+                          </span>
                         </div>
-                      )}
-                      <div className="flex-1 flex flex-col justify-center">
-                        <p className="text-xs text-muted-foreground mb-2 uppercase tracking-widest font-medium">
+                      </div>
+                    )}
+                    
+                    {/* Content */}
+                    <div className="flex-1 flex flex-col p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                        <time className="text-xs text-muted-foreground font-light tracking-wide">
                           {formattedDate}
-                        </p>
-                        <h3 className="text-xl sm:text-2xl font-serif font-light text-foreground mb-3 group-hover:text-primary transition leading-tight">
-                          {post.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground font-light leading-relaxed line-clamp-2 max-w-2xl">
-                          {post.excerpt || "Read this article..."}
-                        </p>
+                        </time>
+                      </div>
+                      
+                      <h3 className="text-xl sm:text-2xl font-serif font-light text-foreground mb-3 leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                      
+                      <p className="text-sm text-muted-foreground font-light leading-relaxed line-clamp-2 mb-4 flex-1">
+                        {post.excerpt || "Discover insights on sustainable living and mindful cooking practices."}
+                      </p>
+                      
+                      <div className="inline-flex items-center gap-2 text-sm font-light text-primary group-hover:gap-3 transition-all">
+                        <span>Read More</span>
+                        <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
                   </article>
@@ -257,6 +337,16 @@ export default function BlogContent() {
             })
           )}
         </div>
+
+        {/* Load More / Pagination Placeholder */}
+        {displayPosts.length > 0 && (activeCategory === "Latest" ? listPosts : displayPosts).length >= 9 && (
+          <div className="mt-16 text-center">
+            <button className="inline-flex items-center gap-3 px-8 py-4 bg-muted hover:bg-muted/80 text-foreground rounded-full border border-border/50 hover:border-primary/30 transition-all group">
+              <span className="font-light">Load More Articles</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        )}
       </div>
     </section>
   )

@@ -1,15 +1,14 @@
+// components\navbar.tsx
 "use client"
 
-import { useState, useCallback } from "react"
-import { Menu, X, Leaf, Mail } from "lucide-react"
+import { useState, useCallback, useEffect } from "react"
+import { Menu, X, Leaf, Mail, ChevronDown } from "lucide-react"
 
-// 🔄 MODIFIED: Updated target to "_blank" when isMailto is true.
 const NavLink = ({ href, children, className, onClick, isMailto }) => (
   <a
     href={href}
     className={className}
     onClick={onClick}
-    // Set target="_blank" only if isMailto is true
     {...(isMailto && { target: "_blank", rel: "noopener noreferrer" })} 
   >
     {children}
@@ -22,76 +21,121 @@ const NAV_ITEMS = [
   { name: "Contact", href: "mailto:everywhiskway@outlook.com", isMailto: true },
 ]
 
-const CTA_BUTTON_CLASS =
-  "inline-flex items-center justify-center gap-2 px-5 py-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition font-medium text-sm shadow-md"
-const MOBILE_CTA_BUTTON_CLASS =
-  "inline-flex items-center justify-center gap-2 px-4 py-2 mt-2 bg-primary text-primary-foreground rounded-sm hover:bg-primary/90 transition font-medium text-sm w-full"
-const DESKTOP_NAV_LINK_CLASS =
-  "text-foreground/80 hover:text-primary font-serif text-base transition relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[2px] after:bg-primary after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100"
-const MOBILE_NAV_LINK_CLASS = "text-foreground hover:text-primary font-medium text-base transition py-1"
-
-export default function NavbarRedesign() {
+export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
   const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), [])
-
   const closeMenu = useCallback(() => setIsOpen(false), [])
 
+  // Track scroll position for navbar styling
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/70 shadow-sm">
+    <nav 
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled 
+          ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/50" 
+          : "bg-background/80 backdrop-blur-sm border-b border-border/30"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-20 lg:h-24">
           {/* Logo */}
           <NavLink href="/" className="flex items-center gap-3 group">
-            <Leaf size={28} className="text-primary transition-colors group-hover:text-primary/80" />
-            <span className="text-2xl md:text-3xl font-serif font-bold text-foreground tracking-tighter">
-              Every Whisk Way
-            </span>
+            <div className={`transition-all duration-300 ${
+              scrolled ? "w-10 h-10" : "w-12 h-12"
+            } rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20`}>
+              <Leaf className={`transition-all duration-300 ${
+                scrolled ? "w-5 h-5" : "w-6 h-6"
+              } text-primary group-hover:rotate-12`} />
+            </div>
+            <div className="flex flex-col">
+              <span className={`font-serif font-light text-foreground tracking-tight transition-all duration-300 ${
+                scrolled ? "text-xl" : "text-2xl"
+              }`}>
+                Every Whisk Way
+              </span>
+              <span className="text-xs text-muted-foreground font-light -mt-0.5 hidden sm:block">
+                Conscious Culinary Journal
+              </span>
+            </div>
           </NavLink>
 
-          {/* Desktop Navigation & CTA */}
-          <div className="hidden md:flex items-center gap-10">
-            <div className="flex gap-8">
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-12">
+            <div className="flex items-center gap-8">
               {NAV_ITEMS.map((item) => (
-                <NavLink key={item.name} href={item.href} isMailto={item.isMailto} className={DESKTOP_NAV_LINK_CLASS}>
-                  {item.name}
+                <NavLink 
+                  key={item.name} 
+                  href={item.href} 
+                  isMailto={item.isMailto}
+                  className="relative text-foreground/80 hover:text-primary font-light text-base transition-colors group"
+                >
+                  <span>{item.name}</span>
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
                 </NavLink>
               ))}
             </div>
 
-            <NavLink href="/#subscribe" className={CTA_BUTTON_CLASS}>
-              <Mail size={16} />
-              Join Newsletter
+            {/* CTA Button */}
+            <NavLink 
+              href="/#subscribe"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 transition-all font-light text-sm group"
+            >
+              <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span>Newsletter</span>
             </NavLink>
           </div>
 
           {/* Mobile menu button */}
-          <button className="md:hidden p-2 text-foreground" onClick={toggleMenu} aria-label="Toggle menu">
-            {isOpen ? <X size={28} /> : <Menu size={28} />}
+          <button 
+            className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors text-foreground" 
+            onClick={toggleMenu} 
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Navigation Dropdown */}
-      {isOpen && (
-        <div className="md:hidden pb-4 flex flex-col gap-3 border-t border-border pt-4 px-6 sm:px-8 bg-background/95">
+      <div 
+        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-6 sm:px-8 pb-6 pt-2 border-t border-border/30 bg-background/95 backdrop-blur-md space-y-4">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.name}
               href={item.href}
               isMailto={item.isMailto}
-              className={MOBILE_NAV_LINK_CLASS}
+              className="block text-foreground hover:text-primary font-light text-base transition-colors py-2"
               onClick={closeMenu}
             >
               {item.name}
             </NavLink>
           ))}
-          <NavLink href="/#subscribe" className={MOBILE_CTA_BUTTON_CLASS} onClick={closeMenu}>
-            <Mail size={16} />
-            Join Newsletter
-          </NavLink>
+          
+          <div className="pt-4 border-t border-border/30">
+            <NavLink 
+              href="/#subscribe"
+              className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all font-light text-sm"
+              onClick={closeMenu}
+            >
+              <Mail className="w-4 h-4" />
+              <span>Join Newsletter</span>
+            </NavLink>
+          </div>
         </div>
-      )}
+      </div>
     </nav>
   )
 }
