@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
 import Image from "next/image"
@@ -37,56 +37,110 @@ interface GroupedPosts {
 
 // --- Data Fetching and State Logic (Custom Hook) ---
 
-const useBlogPosts = () => {
+const INITIAL_LIMIT = 9 // Initial number of posts to fetch (1 featured + 8 list)
+const LOAD_MORE_AMOUNT = 8 // Number of additional posts to load
+
+interface UseBlogPostsProps {
+  initialLimit: number
+  loadMoreAmount: number
+}
+
+const useBlogPosts = ({ initialLimit, loadMoreAmount }: UseBlogPostsProps) => {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [groupedPosts, setGroupedPosts] = useState<GroupedPosts>({})
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false) // New loading state for 'Load More'
   const [error, setError] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(true) // New state to track if more posts exist
+  const [offset, setOffset] = useState(0) // Tracks the current offset
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const supabase = createClient()
-        const { data, error: fetchError } = await supabase
-          .from("posts")
-          .select("id, title, slug, excerpt, featured_image_url, created_at, category")
-          .eq("is_published", true)
-          .order("created_at", { ascending: false })
+  // Function to fetch posts from Supabase
+  const fetchPosts = useCallback(async (currentOffset: number, isInitial: boolean) => {
+    isInitial ? setLoading(true) : setLoadingMore(true)
+    if (isInitial) setError(null)
 
-        if (fetchError) throw fetchError
+    const limit = isInitial ? initialLimit : loadMoreAmount
+    const from = currentOffset
+    const to = currentOffset + limit - 1
+    
+    try {
+      const supabase = createClient()
+      // We fetch 'limit + 1' to check if there are more posts available
+      const { data, error: fetchError } = await supabase
+        .from("posts")
+        .select("id, title, slug, excerpt, featured_image_url, created_at, category", { count: 'exact' })
+        .eq("is_published", true)
+        .order("created_at", { ascending: false })
+        .range(from, to)
 
-        if (data) {
-          const fetchedPosts = data as BlogPost[]
+      if (fetchError) throw fetchError
+
+      if (data) {
+        const fetchedPosts = data as BlogPost[]
+        
+        // Determine if there are more posts by checking the number of items fetched
+        // Since we used .range(from, to) to fetch 'limit' items, if we got fewer than 'limit', there are no more.
+        const receivedCount = fetchedPosts.length
+        const moreAvailable = receivedCount === limit
+
+        if (isInitial) {
           setPosts(fetchedPosts)
+          setOffset(limit) // Update offset for the next load
 
+          // Group all initially fetched posts for category tabs
           const categoryGrouped: GroupedPosts = {}
-
           BLOG_CATEGORIES.filter((c) => c !== "Latest").forEach((category) => {
             categoryGrouped[category] = fetchedPosts.filter((post) => post.category === category)
           })
-
           setGroupedPosts(categoryGrouped)
+          
+        } else {
+          setPosts(prevPosts => [...prevPosts, ...fetchedPosts])
+          setOffset(prevOffset => prevOffset + receivedCount)
         }
-      } catch (e) {
-        console.error("Error fetching blog posts:", e)
-        setError("Failed to load articles. Please check your connection.")
-      } finally {
-        setLoading(false)
+        
+        setHasMore(moreAvailable)
+
+      } else {
+        setHasMore(false)
       }
+    } catch (e) {
+      console.error("Error fetching blog posts:", e)
+      if (isInitial) setError("Failed to load articles. Please check your connection.")
+    } finally {
+      isInitial ? setLoading(false) : setLoadingMore(false)
     }
+  }, [initialLimit, loadMoreAmount])
 
-    fetchPosts()
-  }, [])
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchPosts(0, true)
+  }, [fetchPosts])
+  
+  // Function for the 'Load More' button
+  const loadMorePosts = useCallback(() => {
+    if (hasMore && !loadingMore) {
+      fetchPosts(offset, false)
+    }
+  }, [hasMore, loadingMore, offset, fetchPosts])
 
-  return { posts, groupedPosts, loading, error }
+  return { posts, groupedPosts, loading, loadingMore, error, hasMore, loadMorePosts }
 }
 
 // --- Main Presentation Component (Minimalist & Editorial UI) ---
 
 export default function BlogContent() {
-  const { posts, groupedPosts, loading, error } = useBlogPosts()
+  // Use the updated hook
+  const { 
+    posts, 
+    groupedPosts, 
+    loading, 
+    loadingMore, // Get new state
+    error, 
+    hasMore, // Get new state
+    loadMorePosts // Get new function
+  } = useBlogPosts({ initialLimit: INITIAL_LIMIT, loadMoreAmount: LOAD_MORE_AMOUNT })
+  
   const [activeCategory, setActiveCategory] = useState<string>("Latest")
 
   const categories = BLOG_CATEGORIES
@@ -97,6 +151,9 @@ export default function BlogContent() {
   )
 
   const [featuredPost, ...listPosts] = displayPosts
+  
+  // The posts for the grid are the listPosts if "Latest" is active, otherwise all displayPosts for the category
+  const gridPosts = activeCategory === "Latest" ? listPosts : displayPosts
 
   // --- UI States (Loading, Error, Empty) ---
 
@@ -254,14 +311,14 @@ export default function BlogContent() {
         )}
 
         {/* Section Header for Article List */}
-        {displayPosts.length > 0 && (activeCategory === "Latest" ? listPosts.length > 0 : true) && (
+        {gridPosts.length > 0 && (
           <div className="mb-12 flex items-center justify-between border-b border-border/50 pb-6">
             <div className="flex items-center gap-4">
               <h2 className="text-2xl sm:text-3xl font-serif font-light text-foreground tracking-tight">
                 {activeCategory === "Latest" ? "Latest Articles" : activeCategory}
               </h2>
               <span className="inline-flex items-center justify-center min-w-[32px] h-8 px-3 text-xs font-medium text-muted-foreground bg-muted rounded-full">
-                {activeCategory === "Latest" ? listPosts.length : displayPosts.length}
+                {gridPosts.length}
               </span>
             </div>
           </div>
@@ -269,7 +326,7 @@ export default function BlogContent() {
 
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-          {displayPosts.length === 0 ? (
+          {gridPosts.length === 0 ? (
             <div className="col-span-full text-center py-20">
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
                 <span className="text-2xl">📝</span>
@@ -280,7 +337,7 @@ export default function BlogContent() {
               </p>
             </div>
           ) : (
-            (activeCategory === "Latest" ? listPosts : displayPosts).map((post) => {
+            gridPosts.map((post) => {
               const formattedDate = new Date(post.created_at).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -338,12 +395,24 @@ export default function BlogContent() {
           )}
         </div>
 
-        {/* Load More / Pagination Placeholder */}
-        {displayPosts.length > 0 && (activeCategory === "Latest" ? listPosts : displayPosts).length >= 9 && (
+        {/* Load More / Pagination Logic (Only for 'Latest' category) */}
+        {activeCategory === "Latest" && hasMore && (
           <div className="mt-16 text-center">
-            <button className="inline-flex items-center gap-3 px-8 py-4 bg-muted hover:bg-muted/80 text-foreground rounded-full border border-border/50 hover:border-primary/30 transition-all group">
-              <span className="font-light">Load More Articles</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <button 
+              onClick={loadMorePosts} // <--- FIX APPLIED HERE
+              disabled={loadingMore} // Disable button while loading
+              className="inline-flex items-center gap-3 px-8 py-4 bg-muted hover:bg-muted/80 text-foreground rounded-full border border-border/50 hover:border-primary/30 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="font-light">
+                {loadingMore ? "Loading..." : "Load More Articles"}
+              </span>
+              {!loadingMore && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
+              {loadingMore && (
+                <div className="relative w-4 h-4">
+                  <div className="absolute inset-0 border-2 border-primary/20 rounded-full"></div>
+                  <div className="absolute inset-0 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
             </button>
           </div>
         )}

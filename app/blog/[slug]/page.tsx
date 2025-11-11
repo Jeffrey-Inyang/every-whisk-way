@@ -7,6 +7,8 @@ import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Clock, Calendar } from "lucide-react"
+// 👇 Import the new Client Component
+import ShareButtons from "@/components/ShareButtons" 
 
 // Metadata generation remains unchanged for functionality
 export async function generateMetadata({
@@ -36,7 +38,7 @@ export default async function BlogPostPage({
 
   const { data: post } = await supabase
     .from("posts")
-    .select("*")
+    .select("*, content") // Ensure you select content for read time calculation
     .eq("slug", slug)
     .eq("is_published", true)
     .single()
@@ -294,6 +296,12 @@ export default async function BlogPostPage({
                   <h3 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-6 font-medium">
                     Share Article
                   </h3>
+                  {/* 👇 Use the new Client Component here */}
+                  <ShareButtons 
+                    title={post.title} 
+                    slug={post.slug} 
+                  />
+                  {/* Original buttons removed:
                   <div className="flex flex-col gap-3">
                     <button className="w-full px-4 py-3 text-sm font-light text-foreground hover:text-primary bg-muted/50 hover:bg-muted border border-border/50 rounded-md transition text-left">
                       Copy Link
@@ -305,6 +313,7 @@ export default async function BlogPostPage({
                       Share on Facebook
                     </button>
                   </div>
+                  */}
                 </div>
               </div>
             </aside>
